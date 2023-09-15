@@ -1,4 +1,4 @@
-package test.java.nl.han.ica.icss.parser;
+package nl.han.ica.icss.parser;
 
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.BoolLiteral;

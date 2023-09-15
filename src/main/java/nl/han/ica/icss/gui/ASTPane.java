@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.gui;
+package nl.han.ica.icss.gui;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.Label;

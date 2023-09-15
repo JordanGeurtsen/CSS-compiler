@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss;
+package nl.han.ica.icss;
 
 import nl.han.ica.icss.ast.AST;
 import nl.han.ica.icss.checker.Checker;

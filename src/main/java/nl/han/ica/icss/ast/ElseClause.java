@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.ast;
+package nl.han.ica.icss.ast;
 
 import java.util.ArrayList;
 import java.util.Objects;

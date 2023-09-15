@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.ast.operations;
+package nl.han.ica.icss.ast.operations;
 
 import nl.han.ica.icss.ast.Operation;
 

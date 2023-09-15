@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.ast;
+package nl.han.ica.icss.ast;
 
 import nl.han.ica.icss.checker.SemanticError;
 

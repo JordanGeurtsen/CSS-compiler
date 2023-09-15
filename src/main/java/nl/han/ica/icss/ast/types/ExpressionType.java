@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.ast.types;
+package nl.han.ica.icss.ast.types;
 
 public enum ExpressionType {
     PIXEL,

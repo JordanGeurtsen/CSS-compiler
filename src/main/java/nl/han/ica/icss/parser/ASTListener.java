@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.parser;
+package nl.han.ica.icss.parser;
 
 import java.util.Stack;
 

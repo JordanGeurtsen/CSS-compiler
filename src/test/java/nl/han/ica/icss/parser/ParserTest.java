@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import nl.han.ica.icss.ast.*;
+import nl.han.ica.icss.parser.*;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;

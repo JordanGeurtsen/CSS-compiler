@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.datastructures;
+package nl.han.ica.datastructures;
 
 public interface IHANLinkedList<T> {
     /**

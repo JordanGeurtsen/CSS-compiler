@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.generator;
+package nl.han.ica.icss.generator;
 
 
 import nl.han.ica.icss.ast.AST;

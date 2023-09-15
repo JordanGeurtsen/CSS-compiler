@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.ast.literals;
+package nl.han.ica.icss.ast.literals;
 
 import nl.han.ica.icss.ast.Literal;
 import java.util.Objects;

@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.ast.selectors;
+package nl.han.ica.icss.ast.selectors;
 
 import nl.han.ica.icss.ast.Selector;
 

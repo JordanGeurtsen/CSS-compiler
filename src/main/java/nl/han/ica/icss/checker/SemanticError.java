@@ -1,4 +1,4 @@
-package main.java.nl.han.ica.icss.checker;
+package nl.han.ica.icss.checker;
 
 public class SemanticError {
 	public String description;
