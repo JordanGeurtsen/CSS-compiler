@@ -45,5 +45,25 @@ ASSIGNMENT_OPERATOR: ':=';
 
 
 //--- PARSER: ---
-stylesheet: EOF;
+stylesheet: (statement)*;
+statement: (selector | assignment | if_statement | if_else_statement) SEMICOLON;
+
+selector: (id_selector | class_selector | tag_selector) (selector_op)*;
+assignment: (id_selector | class_selector | tag_selector) ASSIGNMENT_OPERATOR (expression | color_expression);
+if_statement: IF OPEN_BRACE (expression | color_expression) CLOSE_BRACE OPEN_BRACE (statement)* CLOSE_BRACE;
+if_else_statement: IF OPEN_BRACE (expression | color_expression) CLOSE_BRACE OPEN_BRACE (statement)* CLOSE_BRACE ELSE OPEN_BRACE (statement)* CLOSE_BRACE;
+
+selector_op: (PLUS | MIN) (id_selector | class_selector | tag_selector);
+
+id_selector: ID_IDENT;
+class_selector: CLASS_IDENT;
+tag_selector: CAPITAL_IDENT;
+
+expression: (term | term (PLUS | MIN | MUL) term);
+color_expression: (COLOR | id_selector | class_selector | tag_selector);
+
+term: (factor | factor MUL factor);
+factor: (SCALAR | PIXELSIZE | PERCENTAGE | id_selector | class_selector | tag_selector | boolear);
+boolear: (TRUE | FALSE);
+
 
