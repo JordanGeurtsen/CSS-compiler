@@ -45,25 +45,43 @@ ASSIGNMENT_OPERATOR: ':=';
 
 
 //--- PARSER: ---
-stylesheet: (statement)*;
-statement: (selector | assignment | if_statement | if_else_statement) SEMICOLON;
+stylesheet: (variableAssignment | styleRule)* EOF;
 
-selector: (id_selector | class_selector | tag_selector) (selector_op)*;
-assignment: (id_selector | class_selector | tag_selector) ASSIGNMENT_OPERATOR (expression | color_expression);
-if_statement: IF OPEN_BRACE (expression | color_expression) CLOSE_BRACE OPEN_BRACE (statement)* CLOSE_BRACE;
-if_else_statement: IF OPEN_BRACE (expression | color_expression) CLOSE_BRACE OPEN_BRACE (statement)* CLOSE_BRACE ELSE OPEN_BRACE (statement)* CLOSE_BRACE;
+//--- VARIABLES: ---
+variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
+variableReference: CAPITAL_IDENT;
 
-selector_op: (PLUS | MIN) (id_selector | class_selector | tag_selector);
+//--- STYLE RULES: ---
+styleRule: selector OPEN_BRACE ruleBody CLOSE_BRACE;
+ruleBody: (declaration | ifClause | variableAssignment)*;
 
-id_selector: ID_IDENT;
-class_selector: CLASS_IDENT;
-tag_selector: CAPITAL_IDENT;
+//--- SELECTORS: ---
+selector: (classSelector | idSelector | tagSelector);
+classSelector: CLASS_IDENT;
+idSelector: ID_IDENT;
+tagSelector: LOWER_IDENT;
 
-expression: (term | term (PLUS | MIN | MUL) term);
-color_expression: (COLOR | id_selector | class_selector | tag_selector);
+//--- DECLARATIONS: ---
+declaration: propertyName COLON expression SEMICOLON;
+propertyName: LOWER_IDENT;
 
-term: (factor | factor MUL factor);
-factor: (SCALAR | PIXELSIZE | PERCENTAGE | id_selector | class_selector | tag_selector | boolear);
-boolear: (TRUE | FALSE);
+//--- IF CLAUSES: ---
+ifClause: IF BOX_BRACKET_OPEN (boolLiteral | variableReference)* BOX_BRACKET_CLOSE OPEN_BRACE (ruleBody) CLOSE_BRACE (elseClause)?;
+elseClause: ELSE OPEN_BRACE (declaration)* CLOSE_BRACE;
 
+//--- EXPRESSIONS: ---
+expression: (literal | (addOperation | multiplyOperation | subtractOperation));
 
+//--- LITERALS: ---
+literal: (boolLiteral | colorLiteral | percentageLiteral | pixelLiteral | scalarLiteral | variableReference);
+boolLiteral: (TRUE | FALSE);
+colorLiteral: COLOR;
+percentageLiteral: PERCENTAGE;
+pixelLiteral: PIXELSIZE;
+scalarLiteral: SCALAR;
+
+//--- OPERATIONS: ---
+addOperation: literal PLUS operation;
+multiplyOperation: literal MUL operation;
+subtractOperation: literal MIN operation;
+operation: (addOperation | multiplyOperation | subtractOperation) | literal;

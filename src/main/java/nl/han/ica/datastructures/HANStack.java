@@ -15,10 +15,6 @@ public class HANStack<T> implements IHANStack<T> {
 
     @Override
     public T pop() {
-        if (stack.getSize() == 0) {
-            return null;
-        }
-
         T value = stack.getFirst();
         stack.removeFirst();
         return value;
@@ -26,10 +22,6 @@ public class HANStack<T> implements IHANStack<T> {
 
     @Override
     public T peek() {
-        if (stack.getSize() == 0) {
-            return null;
-        }
-
         return stack.getFirst();
     }
 }

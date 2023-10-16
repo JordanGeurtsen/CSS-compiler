@@ -1,4 +1,4 @@
-package test.java.nl.han.ica.icss.parser;
+package nl.han.ica.icss.parser;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

@@ -6,7 +6,7 @@ public class HANLinkedList<T> implements IHANLinkedList<T>{
     private int size;
 
     public HANLinkedList() {
-        head = null;
+        head = new HANNode<>(null);
         size = 0;
     }
 
@@ -106,6 +106,10 @@ public class HANLinkedList<T> implements IHANLinkedList<T>{
 
     @Override
     public T getFirst() {
+        if (head == null) {
+            return null;
+        }
+
         return head.getValue();
     }
 

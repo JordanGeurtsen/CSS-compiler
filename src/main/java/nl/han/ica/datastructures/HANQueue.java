@@ -21,10 +21,6 @@ public class HANQueue<T> implements IHANQueue<T> {
 
     @Override
     public T dequeue() {
-        if (queue.getSize() == 0) {
-            return null;
-        }
-
         T value = queue.getFirst();
         queue.removeFirst();
         return value;
@@ -32,10 +28,6 @@ public class HANQueue<T> implements IHANQueue<T> {
 
     @Override
     public T peek() {
-        if (queue.getSize() == 0) {
-            return null;
-        }
-
         return queue.getFirst();
     }
 
