@@ -53,7 +53,7 @@ variableReference: CAPITAL_IDENT;
 
 //--- STYLE RULES: ---
 styleRule: selector OPEN_BRACE ruleBody CLOSE_BRACE;
-ruleBody: (declaration | ifClause | variableAssignment)*;
+ruleBody: (variableAssignment | declaration | ifClause)*;
 
 //--- SELECTORS: ---
 selector: (classSelector | idSelector | tagSelector);
@@ -66,14 +66,14 @@ declaration: propertyName COLON expression SEMICOLON;
 propertyName: LOWER_IDENT;
 
 //--- IF CLAUSES: ---
-ifClause: IF BOX_BRACKET_OPEN (boolLiteral | variableReference)* BOX_BRACKET_CLOSE OPEN_BRACE (ruleBody) CLOSE_BRACE (elseClause)?;
+ifClause: IF BOX_BRACKET_OPEN (boolLiteral | variableReference)* BOX_BRACKET_CLOSE OPEN_BRACE ruleBody CLOSE_BRACE (elseClause)?;
 elseClause: ELSE OPEN_BRACE (declaration)* CLOSE_BRACE;
 
 //--- EXPRESSIONS: ---
-expression: (literal | (addOperation | multiplyOperation | subtractOperation));
+expression: literal | (addOperation | multiplyOperation | subtractOperation);
 
 //--- LITERALS: ---
-literal: (boolLiteral | colorLiteral | percentageLiteral | pixelLiteral | scalarLiteral | variableReference);
+literal: (variableReference | boolLiteral | colorLiteral | percentageLiteral | pixelLiteral | scalarLiteral);
 boolLiteral: (TRUE | FALSE);
 colorLiteral: COLOR;
 percentageLiteral: PERCENTAGE;
