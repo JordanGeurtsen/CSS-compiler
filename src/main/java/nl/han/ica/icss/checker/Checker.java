@@ -15,10 +15,15 @@ import java.util.HashMap;
 public class Checker {
 
     private IHANLinkedList<HashMap<String, ExpressionType>> variableTypes;
+    private IHANLinkedList<HashMap<String, ArrayList<ExpressionType>>> declarationTypes;
+
 
     public void check(AST ast) {
         variableTypes = new HANLinkedList<>();
+        declarationTypes = new HANLinkedList<>();
+
         variableTypes.addFirst(new HashMap<>());
+        declarationTypes.addFirst(new DeclarationTypes().getDeclarationTypes());
 
         checkStylesheet(ast.root);
     }
@@ -68,22 +73,37 @@ public class Checker {
     private void checkDeclaration(Declaration declaration) {
         ExpressionType expressionType = checkExpressionType(declaration.expression);
 
-        if (expressionType == ExpressionType.UNDEFINED) {
+        if (expressionType == null || expressionType == ExpressionType.UNDEFINED) {
             declaration.setError("Expression type is undefined");
+            return;
         }
 
-        variableTypes.getFirst().forEach((key, value) -> {
-            if (key.equals(declaration.expression.toString())) {
-                if (value != expressionType) {
-                    declaration.setError("Expression type does not match variable type");
-                }
+        if (declarationTypes.getFirst().containsKey(declaration.property.name)) {
+            ArrayList<ExpressionType> types = declarationTypes.getFirst().get(declaration.property.name);
+
+            if (!types.contains(expressionType)) {
+                declaration.setError("Expression type " + expressionType.name().toLowerCase() + " does not match declaration type(s) for " + declaration.property.name);
             }
-        });
+            return;
+        }
+
+        if (variableTypes.getFirst().containsKey(declaration.property.name)) {
+            if (variableTypes.getFirst().get(declaration.property.name) != expressionType) {
+                declaration.setError("Expression type " + expressionType.name().toLowerCase() + " does not match variable type");
+            }
+        }
     }
 
     private void checkIfClause(IfClause ifClause) {
-        if (checkExpressionType(ifClause.conditionalExpression) != ExpressionType.BOOL) {
-            ifClause.setError("If clause conditional expression must be of type bool");
+        ExpressionType expressionType = checkExpressionType(ifClause.conditionalExpression);
+
+        if (expressionType == null || expressionType == ExpressionType.UNDEFINED) {
+            ifClause.setError("Expression type is undefined");
+            return;
+        }
+
+        if (expressionType != ExpressionType.BOOL) {
+            ifClause.setError("If clause conditional expression is of type " + expressionType.name().toLowerCase() + ", this must be a boolean expression");
         }
 
         variableTypes.addFirst(new HashMap<>());
