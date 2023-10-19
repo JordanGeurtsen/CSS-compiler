@@ -67,7 +67,7 @@ propertyName: LOWER_IDENT;
 
 //--- IF CLAUSES: ---
 ifClause: IF BOX_BRACKET_OPEN (boolLiteral | variableReference)* BOX_BRACKET_CLOSE OPEN_BRACE ruleBody CLOSE_BRACE (elseClause)?;
-elseClause: ELSE OPEN_BRACE (declaration)* CLOSE_BRACE;
+elseClause: ELSE OPEN_BRACE ruleBody CLOSE_BRACE;
 
 //--- EXPRESSIONS: ---
 expression: literal | (addOperation | multiplyOperation | subtractOperation);

@@ -26,12 +26,16 @@ public class Checker {
         declarationTypes.addFirst(new DeclarationTypes().getDeclarationTypes());
 
         checkStylesheet(ast.root);
+
+        variableTypes.removeFirst();
+        declarationTypes.removeFirst();
     }
 
     private void checkStylesheet(Stylesheet stylesheet) {
         for (ASTNode child : stylesheet.getChildren()) {
             if (child instanceof VariableAssignment) {
                 checkVariableAssignment((VariableAssignment) child);
+                continue;
             }
 
             if (child instanceof Stylerule) {
@@ -40,27 +44,19 @@ public class Checker {
         }
     }
 
-    private void checkVariableAssignment(VariableAssignment variableAssignment) {
-        VariableReference variableReference = variableAssignment.name;
-        ExpressionType expressionType = checkExpressionType(variableAssignment.expression);
-
-        if (expressionType == null || expressionType == ExpressionType.UNDEFINED) {
-            variableAssignment.setError("Expression type is undefined");
-            return;
-        }
-
-        variableTypes.getFirst().put(variableReference.name, expressionType);
-    }
-
-
     private void checkStylerule(Stylerule stylerule) {
         checkRuleBody(stylerule.body);
     }
 
     private void checkRuleBody(ArrayList<ASTNode> ruleBody) {
         for (ASTNode rule : ruleBody) {
+            if (rule instanceof VariableAssignment) {
+                checkVariableAssignment((VariableAssignment) rule);
+                continue;
+            }
+
             if (rule instanceof Declaration) {
-                checkDeclaration((Declaration) rule);
+//                checkDeclaration((Declaration) rule);
                 continue;
             }
 
@@ -70,10 +66,22 @@ public class Checker {
         }
     }
 
+    private void checkVariableAssignment(VariableAssignment variableAssignment) {
+        VariableReference variableReference = variableAssignment.name;
+        ExpressionType expressionType = checkExpressionType(variableAssignment.expression);
+
+        if (expressionType == ExpressionType.UNDEFINED) {
+            variableAssignment.setError("Expression type is undefined");
+            return;
+        }
+
+        variableTypes.getFirst().put(variableReference.name, expressionType);
+    }
+
     private void checkDeclaration(Declaration declaration) {
         ExpressionType expressionType = checkExpressionType(declaration.expression);
 
-        if (expressionType == null || expressionType == ExpressionType.UNDEFINED) {
+        if (expressionType == ExpressionType.UNDEFINED) {
             declaration.setError("Expression type is undefined");
             return;
         }
@@ -97,7 +105,7 @@ public class Checker {
     private void checkIfClause(IfClause ifClause) {
         ExpressionType expressionType = checkExpressionType(ifClause.conditionalExpression);
 
-        if (expressionType == null || expressionType == ExpressionType.UNDEFINED) {
+        if (expressionType == ExpressionType.UNDEFINED) {
             ifClause.setError("Expression type is undefined");
             return;
         }
@@ -127,7 +135,7 @@ public class Checker {
         }
 
         if (expression instanceof Operation) {
-            return checkOperationType((Operation) expression);
+//            return checkOperationType((Operation) expression);
         }
 
         if (expression instanceof BoolLiteral) {
@@ -146,7 +154,7 @@ public class Checker {
     }
 
     private ExpressionType checkVariableReferenceType(VariableReference variableReference) {
-        ExpressionType expressionType = null;
+        ExpressionType expressionType = ExpressionType.UNDEFINED;
 
         for (int i = 0; i < variableTypes.getSize(); i++) {
             HashMap<String, ExpressionType> variableType = variableTypes.get(i);
@@ -156,7 +164,7 @@ public class Checker {
             }
         }
 
-        if (expressionType == null) {
+        if (expressionType == ExpressionType.UNDEFINED) {
             variableReference.setError("Variable " + variableReference.name + " is not declared or not in the scope.");
         }
 
@@ -174,7 +182,15 @@ public class Checker {
         }
 
         if (operation.rhs instanceof Operation) {
-            right = checkOperationType((Operation) operation.rhs);
+            if (operation instanceof MultiplyOperation && ((Operation) operation.rhs).lhs instanceof ScalarLiteral) {
+                Expression leftExpressionOfRHS = ((Operation) operation.rhs).lhs;
+
+                ((Operation) operation.rhs).lhs = operation.lhs;
+                right = checkOperationType((Operation) operation.rhs);
+                ((Operation) operation.rhs).lhs = leftExpressionOfRHS;
+            } else {
+                right = checkOperationType((Operation) operation.rhs);
+            }
         } else {
             right = checkExpressionType(operation.rhs);
         }
@@ -207,7 +223,7 @@ public class Checker {
             }
         } else if (operation instanceof AddOperation) {
             if (left != right) {
-                operation.setError("Operation can only be used with the same expression types");
+                operation.setError("Add operation can only be used with the same expression types");
                 return ExpressionType.UNDEFINED;
             }
         }
