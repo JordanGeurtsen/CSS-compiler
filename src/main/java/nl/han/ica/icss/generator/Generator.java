@@ -41,7 +41,7 @@ public class Generator {
 
     private String generateExpression(Expression expression) {
         if (expression instanceof ColorLiteral) {
-            return "#" + ((ColorLiteral) expression).value;
+            return ((ColorLiteral) expression).value;
         }
         if (expression instanceof PercentageLiteral) {
             return ((PercentageLiteral) expression).value + "%";
