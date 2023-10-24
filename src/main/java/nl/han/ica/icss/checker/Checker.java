@@ -56,7 +56,7 @@ public class Checker {
             }
 
             if (rule instanceof Declaration) {
-//                checkDeclaration((Declaration) rule);
+                checkDeclaration((Declaration) rule);
                 continue;
             }
 
@@ -135,7 +135,7 @@ public class Checker {
         }
 
         if (expression instanceof Operation) {
-//            return checkOperationType((Operation) expression);
+            return checkOperationType((Operation) expression);
         }
 
         if (expression instanceof BoolLiteral) {
@@ -172,24 +172,30 @@ public class Checker {
     }
 
     private ExpressionType checkOperationType(Operation operation) {
-        ExpressionType left;
+        ExpressionType left = checkExpressionType(operation.lhs);
         ExpressionType right;
 
-        if (operation.lhs instanceof Operation) {
-            left = checkOperationType((Operation) operation.lhs);
-        } else {
-            left = checkExpressionType(operation.lhs);
-        }
 
-        if (operation.rhs instanceof Operation) {
-            if (operation instanceof MultiplyOperation && ((Operation) operation.rhs).lhs instanceof ScalarLiteral) {
-                Expression leftExpressionOfRHS = ((Operation) operation.rhs).lhs;
+        if (operation instanceof MultiplyOperation) {
+            if (operation.rhs instanceof AddOperation || operation.rhs instanceof SubtractOperation) {
+                if (((Operation) operation.rhs).lhs instanceof ScalarLiteral) {
+                    right = ExpressionType.SCALAR;
+                    Expression previousLeft = ((Operation) operation.rhs).lhs;
 
-                ((Operation) operation.rhs).lhs = operation.lhs;
-                right = checkOperationType((Operation) operation.rhs);
-                ((Operation) operation.rhs).lhs = leftExpressionOfRHS;
+                    ((Operation) operation.rhs).lhs = operation.lhs;
+                    checkExpressionType(operation.rhs);
+                    ((Operation) operation.rhs).lhs = previousLeft;
+                } else {
+                    right = checkExpressionType(operation.rhs);
+                }
             } else {
-                right = checkOperationType((Operation) operation.rhs);
+                right = checkExpressionType(operation.rhs);
+            }
+        } else if (operation instanceof AddOperation || operation instanceof SubtractOperation) {
+            right = checkExpressionType(operation.rhs);
+
+            if (operation.rhs instanceof MultiplyOperation && left == ExpressionType.SCALAR) {
+                left = right;
             }
         } else {
             right = checkExpressionType(operation.rhs);
@@ -216,14 +222,9 @@ public class Checker {
                 return ExpressionType.UNDEFINED;
             }
             return left != ExpressionType.SCALAR ? left : right;
-        } else if (operation instanceof SubtractOperation) {
+        } else if (operation instanceof SubtractOperation || operation instanceof AddOperation) {
             if (left != right) {
-                operation.setError("Subtract operation can only be used with the same expression types");
-                return ExpressionType.UNDEFINED;
-            }
-        } else if (operation instanceof AddOperation) {
-            if (left != right) {
-                operation.setError("Add operation can only be used with the same expression types");
+                operation.setError("Add or subtract operation can only be used with the same expression types");
                 return ExpressionType.UNDEFINED;
             }
         }
