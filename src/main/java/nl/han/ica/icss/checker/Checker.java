@@ -175,27 +175,20 @@ public class Checker {
         ExpressionType left = checkExpressionType(operation.lhs);
         ExpressionType right;
 
+        if (operation instanceof MultiplyOperation && operation.rhs instanceof Operation && ((Operation) operation.rhs).lhs instanceof ScalarLiteral) {
+            Expression previousLeft = operation.lhs;
+            Expression previousRightLeftHand = ((Operation) operation.rhs).lhs;
+            ((Operation) operation.rhs).lhs = previousLeft;
+            operation.lhs = previousRightLeftHand;
 
-        if (operation instanceof MultiplyOperation) {
-            if (operation.rhs instanceof AddOperation || operation.rhs instanceof SubtractOperation) {
-                if (((Operation) operation.rhs).lhs instanceof ScalarLiteral) {
-                    right = ExpressionType.SCALAR;
-                    Expression previousLeft = ((Operation) operation.rhs).lhs;
+            right = ExpressionType.SCALAR;
+            ExpressionType result = checkExpressionType(operation.rhs);
 
-                    ((Operation) operation.rhs).lhs = operation.lhs;
-                    checkExpressionType(operation.rhs);
-                    ((Operation) operation.rhs).lhs = previousLeft;
-                } else {
-                    right = checkExpressionType(operation.rhs);
-                }
-            } else {
-                right = checkExpressionType(operation.rhs);
-            }
-        } else if (operation instanceof AddOperation || operation instanceof SubtractOperation) {
-            right = checkExpressionType(operation.rhs);
+            operation.lhs = previousLeft;
+            ((Operation) operation.rhs).lhs = previousRightLeftHand;
 
             if (operation.rhs instanceof MultiplyOperation && left == ExpressionType.SCALAR) {
-                left = right;
+                left = result;
             }
         } else {
             right = checkExpressionType(operation.rhs);
