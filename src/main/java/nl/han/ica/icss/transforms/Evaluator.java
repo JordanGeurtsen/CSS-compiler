@@ -114,46 +114,24 @@ public class Evaluator implements Transform {
     }
 
     private Literal evaluateOperation(Operation operation) {
-        Expression left = operation.lhs;
-        Expression right = operation.rhs;
+        Literal left = evaluateExpression(operation.lhs);
+        Literal right;
 
-        if (left instanceof Operation || left instanceof VariableReference) {
-            left = evaluateExpression(left);
+        if (operation instanceof MultiplyOperation && operation.rhs instanceof Operation) {
+            Operation operationToSolve = new MultiplyOperation();
+            operationToSolve.lhs = left;
+            operationToSolve.rhs = ((Operation) operation.rhs).lhs;
+
+            Expression operationExpression = left instanceof ScalarLiteral ? ((Operation) operation.rhs).lhs : left;
+            ((Operation) operation.rhs).lhs = literalBuilder(operationExpression, executeOperation(operationToSolve));
+
+            operation = (Operation) operation.rhs;
+            return evaluateOperation(operation);
         }
 
-        if (right instanceof Operation) {
-            if (right instanceof MultiplyOperation) {
-                Expression leftHand;
-                Expression rightHand = ((Operation) right).rhs;
-
-                if (rightHand instanceof Operation) {
-                    Operation multiplyToSolve = (Operation) right;
-                    multiplyToSolve.rhs = ((Operation) rightHand).lhs;
-
-                    leftHand = literalBuilder(left instanceof ScalarLiteral ? right : left , executeOperation(multiplyToSolve));
-
-                    if (((Operation) rightHand).rhs instanceof Operation) {
-                        rightHand = ((Operation) rightHand).rhs;
-                    } else {
-                        rightHand = evaluateExpression(((Operation) rightHand).rhs);
-                    }
-                    AddOperation addOperation = new AddOperation();
-                    addOperation.lhs = leftHand;
-                    addOperation.rhs = rightHand;
-                    right = evaluateOperation(addOperation);
-                } else {
-                    right = evaluateExpression(right);
-                }
-            } else {
-                right = evaluateOperation((Operation) right);
-            }
-
-        } else if (right instanceof VariableReference) {
-            right = evaluateExpression(right);
-        }
+        right = evaluateExpression(operation.rhs);
 
         Expression operationExpression = left instanceof ScalarLiteral ? right : left;
-
         operation.lhs = left;
         operation.rhs = right;
 
